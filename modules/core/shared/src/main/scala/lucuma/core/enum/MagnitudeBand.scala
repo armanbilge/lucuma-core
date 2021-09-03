@@ -28,7 +28,7 @@ sealed abstract class MagnitudeBand(
   val longName: String,
   val center: Wavelength,
   val width: Quantity[PosInt, Nanometer],
-  val magnitudeSystem: MagnitudeSystem
+  val magnitudeSystem: BrightnessUnits
 ) extends Product with Serializable {
   require(center.toPicometers.value >= width.value / 2)
 
@@ -41,26 +41,26 @@ sealed abstract class MagnitudeBand(
 
 object MagnitudeBand {
 
-  /** @group Constructors */ case object SloanU extends MagnitudeBand("SloanU", "u", "UV", Wavelength(356000), 46.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.AB)
-  /** @group Constructors */ case object SloanG extends MagnitudeBand("SloanG", "g", "Green", Wavelength(483000), 99.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.AB)
-  /** @group Constructors */ case object SloanR extends MagnitudeBand("SloanR", "r", "Red", Wavelength(626000), 96.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.AB)
-  /** @group Constructors */ case object SloanI extends MagnitudeBand("SloanI", "i", "Far red", Wavelength(767000), 106.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.AB)
-  /** @group Constructors */ case object SloanZ extends MagnitudeBand("SloanZ", "z", "Near infrared", Wavelength(910000), 125.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.AB)
-  /** @group Constructors */ case object U extends MagnitudeBand("U", "U", "Ultraviolet", Wavelength(360000), 75.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object B extends MagnitudeBand("B", "B", "Blue", Wavelength(440000), 90.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object V extends MagnitudeBand("V", "V", "Visual", Wavelength(550000), 85.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object Uc extends MagnitudeBand("Uc", "UC", "UCAC", Wavelength(610000), 63.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object R extends MagnitudeBand("R", "R", "Red", Wavelength(670000), 100.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object I extends MagnitudeBand("I", "I", "Infrared", Wavelength(870000), 100.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object Y extends MagnitudeBand("Y", "Y", "Y", Wavelength(1020000), 120.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object J extends MagnitudeBand("J", "J", "J", Wavelength(1250000), 240.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object H extends MagnitudeBand("H", "H", "H", Wavelength(1650000), 300.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object K extends MagnitudeBand("K", "K", "K", Wavelength(2200000), 410.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object L extends MagnitudeBand("L", "L", "L", Wavelength(3760000), 700.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object M extends MagnitudeBand("M", "M", "M", Wavelength(4770000), 240.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object N extends MagnitudeBand("N", "N", "N", Wavelength(10470000), 5230.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object Q extends MagnitudeBand("Q", "Q", "Q", Wavelength(20130000), 1650.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
-  /** @group Constructors */ case object Ap extends MagnitudeBand("Ap", "AP", "Apparent", Wavelength(550000), 85.withRefinedUnit[Positive, Nanometer], MagnitudeSystem.Vega)
+  /** @group Constructors */ case object SloanU extends MagnitudeBand("SloanU", "u", "UV", Wavelength(356000), 46.withRefinedUnit[Positive, Nanometer], BrightnessUnits.AB)
+  /** @group Constructors */ case object SloanG extends MagnitudeBand("SloanG", "g", "Green", Wavelength(483000), 99.withRefinedUnit[Positive, Nanometer], BrightnessUnits.AB)
+  /** @group Constructors */ case object SloanR extends MagnitudeBand("SloanR", "r", "Red", Wavelength(626000), 96.withRefinedUnit[Positive, Nanometer], BrightnessUnits.AB)
+  /** @group Constructors */ case object SloanI extends MagnitudeBand("SloanI", "i", "Far red", Wavelength(767000), 106.withRefinedUnit[Positive, Nanometer], BrightnessUnits.AB)
+  /** @group Constructors */ case object SloanZ extends MagnitudeBand("SloanZ", "z", "Near infrared", Wavelength(910000), 125.withRefinedUnit[Positive, Nanometer], BrightnessUnits.AB)
+  /** @group Constructors */ case object U extends MagnitudeBand("U", "U", "Ultraviolet", Wavelength(360000), 75.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object B extends MagnitudeBand("B", "B", "Blue", Wavelength(440000), 90.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object V extends MagnitudeBand("V", "V", "Visual", Wavelength(550000), 85.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object Uc extends MagnitudeBand("Uc", "UC", "UCAC", Wavelength(610000), 63.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object R extends MagnitudeBand("R", "R", "Red", Wavelength(670000), 100.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object I extends MagnitudeBand("I", "I", "Infrared", Wavelength(870000), 100.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object Y extends MagnitudeBand("Y", "Y", "Y", Wavelength(1020000), 120.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object J extends MagnitudeBand("J", "J", "J", Wavelength(1250000), 240.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object H extends MagnitudeBand("H", "H", "H", Wavelength(1650000), 300.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object K extends MagnitudeBand("K", "K", "K", Wavelength(2200000), 410.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object L extends MagnitudeBand("L", "L", "L", Wavelength(3760000), 700.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object M extends MagnitudeBand("M", "M", "M", Wavelength(4770000), 240.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object N extends MagnitudeBand("N", "N", "N", Wavelength(10470000), 5230.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object Q extends MagnitudeBand("Q", "Q", "Q", Wavelength(20130000), 1650.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
+  /** @group Constructors */ case object Ap extends MagnitudeBand("Ap", "AP", "Apparent", Wavelength(550000), 85.withRefinedUnit[Positive, Nanometer], BrightnessUnits.Vega)
 
   /** All members of MagnitudeBand, in canonical order. */
   val all: List[MagnitudeBand] =

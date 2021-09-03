@@ -5,7 +5,7 @@ package lucuma.core.math
 
 import coulomb._
 import coulomb.accepted._
-import coulomb.define.DerivedUnit
+import coulomb.define._
 import coulomb.mks._
 import coulomb.si._
 import coulomb.siprefix._
@@ -59,6 +59,8 @@ trait units {
   implicit val defineUnitMicroArcSecond =
     DerivedUnit[MicroArcSecond, Degree](Rational(1, MicroArcSecondsPerDegree), abbv = "μas")
 
+  type ArcSecondSquare = ArcSecond %* ArcSecond
+
   private val DaysPerYear: SafeLong = 365 * 8640L
 
   trait MilliArcSecondPerYear
@@ -75,7 +77,13 @@ trait units {
       abbv = "μas/y"
     )
 
-  // Magnitude system units
+  trait Vega
+  implicit val defineUnitVega = BaseUnit[Vega](abbv = "Vega")
+
+  trait AB
+  implicit val defineUnitAB = BaseUnit[AB](abbv = "AB")
+
+  // Brightness units
   private val JanskyPerWattMeter2Hertz: SafeLong = SafeLong(10).pow(26)
   trait Jansky
   implicit val defineJansky =

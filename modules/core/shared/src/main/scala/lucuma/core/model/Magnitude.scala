@@ -5,7 +5,7 @@ package lucuma.core.model
 
 import cats._
 import lucuma.core.enum.MagnitudeBand
-import lucuma.core.enum.MagnitudeSystem
+import lucuma.core.enum.BrightnessUnits
 import lucuma.core.math.MagnitudeValue
 import monocle.Focus
 import monocle.Lens
@@ -17,7 +17,7 @@ final case class Magnitude(
   value:  MagnitudeValue,
   band:   MagnitudeBand,
   error:  Option[MagnitudeValue],
-  system: MagnitudeSystem
+  system: BrightnessUnits
 ) {
   override def toString: String = {
     val errStr = error.map(e => f"${e.toDoubleValue}%.2f")
@@ -32,14 +32,14 @@ object Magnitude {
 
   val error: Lens[Magnitude, Option[MagnitudeValue]] = Focus[Magnitude](_.error)
 
-  val system: Lens[Magnitude, MagnitudeSystem] = Focus[Magnitude](_.system)
+  val system: Lens[Magnitude, BrightnessUnits] = Focus[Magnitude](_.system)
 
   /** Secondary constructor. */
   def apply(value: MagnitudeValue, band: MagnitudeBand, error: MagnitudeValue) =
     new Magnitude(value, band, Some(error), band.magnitudeSystem)
 
   /** Secondary constructor defaulting to no error. */
-  def apply(value: MagnitudeValue, band: MagnitudeBand, system: MagnitudeSystem) =
+  def apply(value: MagnitudeValue, band: MagnitudeBand, system: BrightnessUnits) =
     new Magnitude(value, band, None, system)
 
   /** Secondary constructor defaulting to no given error. */

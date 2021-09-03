@@ -6,7 +6,7 @@ package arb
 
 import cats.implicits._
 import lucuma.core.enum.MagnitudeBand
-import lucuma.core.enum.MagnitudeSystem
+import lucuma.core.enum.BrightnessUnits
 import lucuma.core.math.MagnitudeValue
 import lucuma.core.math.arb.ArbMagnitudeValue._
 import lucuma.core.util.arb.ArbEnumerated
@@ -26,12 +26,12 @@ trait ArbMagnitude {
         v <- arbitrary[MagnitudeValue]
         b <- arbitrary[MagnitudeBand]
         e <- arbitrary[Option[MagnitudeValue]]
-        s <- arbitrary[MagnitudeSystem]
+        s <- arbitrary[BrightnessUnits]
       } yield Magnitude(v, b, e, s)
     }
 
   implicit val cogMagnitude: Cogen[Magnitude] =
-    Cogen[(MagnitudeValue, MagnitudeBand, Option[MagnitudeValue], MagnitudeSystem)].contramap { u =>
+    Cogen[(MagnitudeValue, MagnitudeBand, Option[MagnitudeValue], BrightnessUnits)].contramap { u =>
       (u.value, u.band, u.error, u.system)
     }
 
