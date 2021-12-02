@@ -19,6 +19,38 @@ import eu.timepit.refined.types.numeric.PosInt
 import spire.math._
 
 trait units {
+
+  trait UnitOfMeasure extends UnitDefinition
+  implicit def unitOfMeasureFromBaseUnit[U](implicit ev: BaseUnit[U]): UnitOfMeasure[U] =
+    ev.asInstanceOf[UnitOfMeasure[U]]
+  implicit def unitOfMeasureFromDerivedUnit[U, D](implicit
+    ev: DerivedUnit[U, D]
+  ): UnitOfMeasure[U] =
+    ev.asInstanceOf[UnitOfMeasure[U]]
+
+  trait VegaMagnitude
+  implicit val defineVegaMagnitude =
+    DerivedUnit[VegaMagnitude, Unitless](Rational.one, abbv = "Vega mags")
+
+  trait ABMagnitude
+  implicit val defineABMagnitude =
+    DerivedUnit[ABMagnitude, Unitless](Rational.one, abbv = "AB mags")
+
+  trait BrightnessUnit[U] {
+    type Type
+  }
+
+  object BrightnessUnit {
+    type Integrated
+    type Surface
+  }
+  implicit object BrightnessVegaMagnitude extends BrightnessUnit[VegaMagnitude] {
+    type Type = BrightnessUnit.Integrated
+  }
+  implicit object brightnessABMagnitude   extends BrightnessUnit[ABMagnitude]   {
+    type Type = BrightnessUnit.Integrated
+  }
+
   trait Pixels
   implicit val defineUnitPixels = BaseUnit[Pixels](abbv = "px")
 
@@ -94,7 +126,7 @@ trait units {
 
   type WattsMag          = Watt %/ ((Meter %^ 2) %* Micrometer)
   type ErgsWavelengthMag = Erg %/ (Second %* (Centimeter %^ 2) %* Angstrom)
-  type ErgsFrequencyMag  = Erg %/ (Second %* Centimeter %* Hertz)
+  type ErgsFrequencyMag  = Erg %/ (Second %* (Centimeter %^ 2) %* Hertz)
 
   // PosInt can be converted to Rational exactly
   implicit def rationalPosIntConverter[U1, U2](implicit
