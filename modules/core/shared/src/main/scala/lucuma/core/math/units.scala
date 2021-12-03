@@ -17,12 +17,46 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric._
 import eu.timepit.refined.types.numeric.PosInt
 import spire.math._
+import monocle.Focus
+import monocle.Lens
+import scala.annotation.unused
 
 trait units {
 
   // Like coulomb's quantity, but units are a value, not a type.
-  case class MyQuantity[N](value: N, unit: UnitType) {
+  trait QuantityTrait[N] {
+    val value: N
+    val unit: UnitType
+
     def toCoulomb: Quantity[N, unit.Type] = value.withUnit[unit.Type]
+  }
+
+  case class MyQuantity[N](value: N, unit: UnitType) extends QuantityTrait[N]
+  object MyQuantity {
+    def apply[N, U](q: Quantity[N, U])(implicit unit: UnitOfMeasure[U]): MyQuantity[N] =
+      MyQuantity(q.value, unit)
+
+    def value[N]: Lens[MyQuantity[N], N] = Focus[MyQuantity[N]](_.value)
+
+    def unit[N]: Lens[MyQuantity[N], UnitType] = Focus[MyQuantity[N]](_.unit)
+
+    // Implicit conversions to/from coulomb?
+  }
+
+  trait DimensionUnit[D, U]
+
+  type Brightness
+
+  case class DimensionQuantity[N, D] private (value: N, unit: UnitType) extends QuantityTrait[N]
+  object DimensionQuantity {
+    def apply[N, D, U](
+      q:             Quantity[N, U]
+    )(implicit unit: UnitOfMeasure[U], @unused ev: DimensionUnit[D, U]): DimensionQuantity[N, D] =
+      DimensionQuantity(q.value, unit)
+
+    def value[N, D]: Lens[DimensionQuantity[N, D], N] = Focus[DimensionQuantity[N, D]](_.value)
+
+    def unit[N, D]: Lens[DimensionQuantity[N, D], UnitType] = Focus[DimensionQuantity[N, D]](_.unit)
   }
 
   // Trick to use coulomb's type units as values (by accessing their UnitDefinition instances)
@@ -52,10 +86,12 @@ trait units {
   trait VegaMagnitude
   implicit val defineVegaMagnitude =
     DerivedUnit[VegaMagnitude, Unitless](Rational.one, abbv = "Vega mags")
+  implicit object VegaMagnitudeBrightness extends DimensionUnit[Brightness, VegaMagnitude]
 
   trait ABMagnitude
   implicit val defineABMagnitude =
     DerivedUnit[ABMagnitude, Unitless](Rational.one, abbv = "AB mags")
+  implicit object ABMagnitudeBrightness extends DimensionUnit[Brightness, ABMagnitude]
 
   //
 

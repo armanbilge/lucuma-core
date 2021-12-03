@@ -7,14 +7,14 @@ import cats._
 // import cats.syntax.all._
 import lucuma.core.enum.Band
 import lucuma.core.math.BrightnessValue
-// import monocle.Focus
-// import monocle.Lens
-import coulomb._
+import monocle.Focus
+import monocle.Lens
+// import coulomb._
 import lucuma.core.math.units._
 // import coulomb.unitops.UnitString
 // import scala.annotation.unused
 // import coulomb.cats.implicits._
-import coulomb.define.UnitDefinition
+// import coulomb.define.UnitDefinition
 
 /**
  * Describes the brightness of a target on a given band.
@@ -22,40 +22,45 @@ import coulomb.define.UnitDefinition
  * This class replaces the previous `Magnitude`.
  */
 // final case class Brightness[Units](units: BrightnessUnit)(
-abstract case class Brightness private () {
-  type Units
-
-  def units: UnitDefinition
-  def value: Quantity[BrightnessValue, Units]
-  def band: Band
-  def error: Option[BrightnessValue]
+final case class Brightness(
+  quantity: DimensionQuantity[BrightnessValue, Brightness],
+  band:     Band,
+  error:    Option[BrightnessValue]
+) {
 
   override def toString: String = {
     val errStr = error.map(e => f"${e.toDoubleValue}%.2f")
-    f"Brightness(${value.value.toDoubleValue}%.2f, ${band.shortName}, $errStr, ${units.abbv})"
+    f"Brightness(${quantity.value.toDoubleValue}%.2f, ${band.shortName}, $errStr, ${quantity.unit.definition.abbv})"
   }
 }
 
 object Brightness {
-  def apply[_Units](
-    _value:          Quantity[BrightnessValue, _Units],
-    _band:           Band,
-    _error:          Option[BrightnessValue]
-  )(implicit _units: BrightnessUnit[_Units]): Brightness =
-    new Brightness {
-      type Units = _Units
-      val units                                   = _units.definition
-      val value: Quantity[BrightnessValue, Units] = _value
-      val band: Band                              = _band
-      val error: Option[BrightnessValue]          = _error
-    }
+  // def apply[_Units](
+  //   _value:          Quantity[BrightnessValue, _Units],
+  //   _band:           Band,
+  //   _error:          Option[BrightnessValue]
+  // )(implicit _units: BrightnessUnit[_Units]): Brightness =
+  //   new Brightness {
+  //     type Units = _Units
+  //     val units                                   = _units.definition
+  //     val value: Quantity[BrightnessValue, Units] = _value
+  //     val band: Band                              = _band
+  //     val error: Option[BrightnessValue]          = _error
+  //   }
 
   // def value[Units, Type](implicit
   //   @unused ev: BrightnessUnit[Units]
   // ): Lens[Brightness[Units], Quantity[BrightnessValue, Units]] =
   //   Focus[Brightness[Units]](_.value)
 
-  // val band: Lens[Brightness, Band] = Focus[Brightness](_.band)
+  val quantity: Lens[Brightness, DimensionQuantity[BrightnessValue, Brightness]] =
+    Focus[Brightness](_.quantity)
+
+  val value: Lens[Brightness, BrightnessValue] = quantity.andThen(DimensionQuantity.value)
+
+  val unit: Lens[Brightness, UnitType] = quantity.andThen(DimensionQuantity.unit)
+
+  val band: Lens[Brightness, Band] = Focus[Brightness](_.band)
 
   // val error: Lens[Brightness, Option[BrightnessValue]] = Focus[Brightness](_.error)
 
@@ -82,7 +87,7 @@ object Brightness {
 
   implicit def BrightnessOrder: Order[Brightness] =
     // Not same order as before, this doesn't take into account unit definition order
-    Order.by(m => (m.units.name, m.band.tag, m.value.value, m.error))
+    Order.by(m => (m.quantity.unit.definition.name, m.band.tag, m.quantity.value, m.error))
 
   /** group Typeclass Instances */
   implicit def BrightnessShow[Units]: Show[Brightness] =
