@@ -34,7 +34,7 @@ trait Qty[N] {
 /**
  * A magnitude of type `N` and a runtime representation of a physical unit for a dimension `D`.
  */
-case class DimensionQuantity[N, D] private (value: N, unit: UnitType) extends Qty[N]
+case class DimensionQuantity[N, +D] private (value: N, unit: UnitType) extends Qty[N]
 object DimensionQuantity {
 
   /**

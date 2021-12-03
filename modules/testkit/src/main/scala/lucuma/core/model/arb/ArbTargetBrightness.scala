@@ -26,7 +26,7 @@ trait ArbTargetBrightness {
   implicit val arbTargetBrightness: Arbitrary[TargetBrightness] =
     Arbitrary {
       for {
-        s <- Gen.oneOf(BrightnessUnit.Integrated.all)
+        s <- Gen.oneOf(IntegratedBrightness.all)
         v <- arbitrary[BrightnessValue]
         b <- arbitrary[Band]
         e <- arbitrary[Option[BrightnessValue]]

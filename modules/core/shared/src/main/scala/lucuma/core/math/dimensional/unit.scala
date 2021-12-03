@@ -29,6 +29,9 @@ trait UnitType {
  */
 trait UnitOfMeasure[U] extends UnitType {
   type Type = U
+
+  def withDimension[D](implicit ev: DimensionUnit[D, U]): DimensionUnitOfMeasure[D, U] =
+    DimensionUnitOfMeasure(this, ev)
 }
 
 object UnitOfMeasure {
@@ -46,17 +49,23 @@ object UnitOfMeasure {
     }
 }
 
+// trait DimensionUnitType[U] {
+//   type Dimension
+// }
+
 /**
  * Evidence that `U` is a unit of measure for dimension `D`.
  */
-trait DimensionUnit[D, U]
+trait DimensionUnit[+D, U] { //extends DimensionUnitType[U] {
+  // type Dimension = D
+}
 
 /**
  * A unit of measure and the physical dimension of that unit. A dimension being for example
  * `Length`, `Weight`, `Time`, etc.
  */
-trait DimensionUnitType[D] extends UnitType {
-  type Dimension = D
+trait DimensionUnitType[+D] extends UnitType {
+  // type Dimension = D
 
   def withValue[N](value: N): DimensionQuantity[N, D] =
     DimensionQuantity(value, this)
@@ -68,7 +77,7 @@ trait DimensionUnitType[D] extends UnitType {
  * Automatically derived if there's an implicit `BaseUnit[U]` or `DerivedUnit[U, _]` in scope, as
  * well as a `DimensionUnit[D, U]`.
  */
-trait DimensionUnitOfMeasure[D, U] extends UnitOfMeasure[U] with DimensionUnitType[D]
+trait DimensionUnitOfMeasure[+D, U] extends UnitOfMeasure[U] with DimensionUnitType[D]
 
 object DimensionUnitOfMeasure {
   def apply[D, U](implicit
@@ -78,4 +87,11 @@ object DimensionUnitOfMeasure {
     new DimensionUnitOfMeasure[D, U] {
       val definition = unit.definition
     }
+
+  // def of[U]()(implicit unit: UnitOfMeasure[U]): Applied[U] = new Applied[U](unit)
+
+  // class Applied[U](unit: UnitOfMeasure[U]) {
+  //   def apply[D]()(implicit ev: DimensionUnit[D, U]): DimensionUnitOfMeasure[D, U] =
+  //     DimensionUnitOfMeasure(unit, ev)
+  // }
 }

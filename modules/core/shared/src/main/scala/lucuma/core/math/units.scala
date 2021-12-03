@@ -20,45 +20,31 @@ import lucuma.core.math.dimensional._
 import spire.math._
 
 trait units {
+
   type Brightness
+  object Brightness {
+    type Integrated <: Brightness
+    type Surface <: Brightness
+  }
 
   trait VegaMagnitude
   implicit val defineVegaMagnitude =
     DerivedUnit[VegaMagnitude, Unitless](Rational.one, abbv = "Vega mags")
-  implicit object VegaMagnitudeBrightness extends DimensionUnit[Brightness, VegaMagnitude]
+  implicit object VegaMagnitudeBrightness
+      extends DimensionUnit[Brightness.Integrated, VegaMagnitude]
 
   trait ABMagnitude
   implicit val defineABMagnitude =
     DerivedUnit[ABMagnitude, Unitless](Rational.one, abbv = "AB mags")
-  implicit object ABMagnitudeBrightness extends DimensionUnit[Brightness, ABMagnitude]
+  implicit object ABMagnitudeBrightness extends DimensionUnit[Brightness.Integrated, ABMagnitude]
 
-  //
-
-  trait BrightnessUnit[U] extends DimensionUnitOfMeasure[Brightness, U] {
-    type Kind
-  }
-
-  object BrightnessUnit {
-    type Integrated
-    type Surface
-
-    implicit val brightnessVegaMagnitude: BrightnessUnit[VegaMagnitude] =
-      new BrightnessUnit[VegaMagnitude] {
-        type Kind = BrightnessUnit.Integrated
-        val definition = defineVegaMagnitude
-      }
-
-    implicit val brightnessABMagnitude: BrightnessUnit[ABMagnitude] =
-      new BrightnessUnit[ABMagnitude] {
-        type Kind = BrightnessUnit.Integrated
-        val definition = defineABMagnitude
-      }
-
-    object Integrated {
-      val all: List[DimensionUnitType[Brightness]] =
-        List(brightnessVegaMagnitude, brightnessABMagnitude)
+   object IntegratedBrightness {
+      val all: List[DimensionUnitType[Brightness.Integrated]] =
+        List(
+          UnitOfMeasure[VegaMagnitude].withDimension,
+          UnitOfMeasure[ABMagnitude].withDimension
+        )
     }
-  }
 
   //
 
