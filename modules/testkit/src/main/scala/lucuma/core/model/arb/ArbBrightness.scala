@@ -6,15 +6,18 @@ package arb
 
 import cats.implicits._
 import lucuma.core.enum.Band
-import lucuma.core.enum.BrightnessUnits
+// import lucuma.core.enum.BrightnessUnit
 import lucuma.core.math.BrightnessValue
 import lucuma.core.math.arb.ArbBrightnessValue._
 import lucuma.core.util.arb.ArbEnumerated
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._
 import org.scalacheck._
+import lucuma.core.math.units._
 
 import scala.collection.immutable.SortedMap
+import coulomb.define.UnitDefinition
+import coulomb._
 
 trait ArbBrightness {
 
@@ -23,17 +26,21 @@ trait ArbBrightness {
   implicit val arbBrightness: Arbitrary[Brightness] =
     Arbitrary {
       for {
+        // s <- arbitrary[BrightnessUnit.Integrated]
+        s <- Gen.oneOf(BrightnessUnit.Integrated.all)
         v <- arbitrary[BrightnessValue]
         b <- arbitrary[Band]
         e <- arbitrary[Option[BrightnessValue]]
-        s <- arbitrary[BrightnessUnits]
-      } yield Brightness(v, b, e, s)
+      } yield Brightness(v.withUnit[s.UnitType], b, e)(s.units)
     }
 
+  implicit val cogUnitDefinition: Cogen[UnitDefinition] =
+    Cogen[(String, String)].contramap(u => (u.name, u.abbv))
+
   implicit val cogBrightness: Cogen[Brightness] =
-    Cogen[(BrightnessValue, Band, Option[BrightnessValue], BrightnessUnits)].contramap { u =>
-      (u.value, u.band, u.error, u.units)
-    }
+    Cogen[
+      (UnitDefinition, BrightnessValue, Band, Option[BrightnessValue])
+    ].contramap(u => (u.units, u.value, u.band, u.error))
 
   implicit val arbBrightnessesMap: Arbitrary[SortedMap[Band, Brightness]] =
     Arbitrary(arbitrary[Vector[Brightness]].map(_.fproductLeft(_.band)).map(x => SortedMap(x: _*)))

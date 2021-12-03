@@ -23,12 +23,13 @@ import spire.syntax.all._
  * @group Enumerations
  */
 sealed abstract class Band(
-  val tag:             String,
-  val shortName:       String,
-  val longName:        String,
-  val center:          Wavelength,
-  val width:           Quantity[PosInt, Nanometer],
-  val brightnessUnits: BrightnessUnits
+  val tag:       String,
+  val shortName: String,
+  val longName:  String,
+  val center:    Wavelength,
+  val width:     Quantity[PosInt, Nanometer]
+  // val brightnessUnit: BrightnessUnit[BrightnessUnit.Integrated]
+  // val defaultIntegratedUnit: BrightnessUnit.Type[T] => BrightnessUnit[T]
 ) extends Product
     with Serializable {
   require(center.toPicometers.value >= width.value / 2)
@@ -53,8 +54,8 @@ object Band {
         "u",
         "UV",
         Wavelength(356000),
-        46.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.ABMagnitudes
+        46.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.ABMagnitudes
       )
 
   /** @group Constructors */
@@ -64,8 +65,8 @@ object Band {
         "g",
         "Green",
         Wavelength(483000),
-        99.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.ABMagnitudes
+        99.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.ABMagnitudes
       )
 
   /** @group Constructors */
@@ -75,8 +76,8 @@ object Band {
         "r",
         "Red",
         Wavelength(626000),
-        96.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.ABMagnitudes
+        96.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.ABMagnitudes
       )
 
   /** @group Constructors */
@@ -86,8 +87,8 @@ object Band {
         "i",
         "Far red",
         Wavelength(767000),
-        106.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.ABMagnitudes
+        106.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.ABMagnitudes
       )
 
   /** @group Constructors */
@@ -97,8 +98,8 @@ object Band {
         "z",
         "Near infrared",
         Wavelength(910000),
-        125.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.ABMagnitudes
+        125.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.ABMagnitudes
       )
 
   /** @group Constructors */
@@ -108,8 +109,8 @@ object Band {
         "U",
         "Ultraviolet",
         Wavelength(360000),
-        75.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        75.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -119,8 +120,8 @@ object Band {
         "B",
         "Blue",
         Wavelength(440000),
-        90.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        90.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -130,8 +131,8 @@ object Band {
         "V",
         "Visual",
         Wavelength(550000),
-        85.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        85.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -141,8 +142,8 @@ object Band {
         "UC",
         "UCAC",
         Wavelength(610000),
-        63.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        63.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -152,8 +153,8 @@ object Band {
         "R",
         "Red",
         Wavelength(670000),
-        100.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        100.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -163,8 +164,8 @@ object Band {
         "I",
         "Infrared",
         Wavelength(870000),
-        100.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        100.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -174,8 +175,8 @@ object Band {
         "Y",
         "Y",
         Wavelength(1020000),
-        120.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        120.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -185,8 +186,8 @@ object Band {
         "J",
         "J",
         Wavelength(1250000),
-        240.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        240.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -196,8 +197,8 @@ object Band {
         "H",
         "H",
         Wavelength(1650000),
-        300.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        300.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -207,8 +208,8 @@ object Band {
         "K",
         "K",
         Wavelength(2200000),
-        410.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        410.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -218,8 +219,8 @@ object Band {
         "L",
         "L",
         Wavelength(3760000),
-        700.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        700.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -229,8 +230,8 @@ object Band {
         "M",
         "M",
         Wavelength(4770000),
-        240.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        240.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -240,8 +241,8 @@ object Band {
         "N",
         "N",
         Wavelength(10470000),
-        5230.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        5230.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -251,8 +252,8 @@ object Band {
         "Q",
         "Q",
         Wavelength(20130000),
-        1650.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        1650.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** @group Constructors */
@@ -262,8 +263,8 @@ object Band {
         "AP",
         "Apparent",
         Wavelength(550000),
-        85.withRefinedUnit[Positive, Nanometer],
-        BrightnessUnits.VegaMagnitudes
+        85.withRefinedUnit[Positive, Nanometer]
+        // BrightnessUnit.VegaMagnitudes
       )
 
   /** All members of Band, in canonical order. */

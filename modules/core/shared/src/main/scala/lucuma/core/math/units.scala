@@ -20,13 +20,18 @@ import spire.math._
 
 trait units {
 
-  trait UnitOfMeasure extends UnitDefinition
-  implicit def unitOfMeasureFromBaseUnit[U](implicit ev: BaseUnit[U]): UnitOfMeasure[U] =
-    ev.asInstanceOf[UnitOfMeasure[U]]
-  implicit def unitOfMeasureFromDerivedUnit[U, D](implicit
-    ev: DerivedUnit[U, D]
-  ): UnitOfMeasure[U] =
-    ev.asInstanceOf[UnitOfMeasure[U]]
+  // Trick to use coulomb's type units as values (by accessing their UnitDefinition instances)
+  trait UnitOfMeasure[U] extends UnitDefinition
+  object UnitOfMeasure {
+    def apply[U: UnitOfMeasure]: UnitOfMeasure[U] = implicitly[UnitOfMeasure[U]]
+
+    implicit def unitOfMeasureFromBaseUnit[U](implicit ev: BaseUnit[U]): UnitOfMeasure[U] =
+      ev.asInstanceOf[UnitOfMeasure[U]]
+    implicit def unitOfMeasureFromDerivedUnit[U, D](implicit
+      ev: DerivedUnit[U, D]
+    ): UnitOfMeasure[U] =
+      ev.asInstanceOf[UnitOfMeasure[U]]
+  }
 
   trait VegaMagnitude
   implicit val defineVegaMagnitude =
@@ -36,19 +41,36 @@ trait units {
   implicit val defineABMagnitude =
     DerivedUnit[ABMagnitude, Unitless](Rational.one, abbv = "AB mags")
 
-  trait BrightnessUnit[U] {
+  //
+
+  // abstract class BrightnessUnit[Units, Type](val units: UnitOfMeasure[Units]) {
+  //   type UnitType = Units
+  // }
+
+  trait BrightnessUnit[U] extends UnitOfMeasure[U] {
     type Type
   }
 
   object BrightnessUnit {
     type Integrated
     type Surface
-  }
-  implicit object BrightnessVegaMagnitude extends BrightnessUnit[VegaMagnitude] {
-    type Type = BrightnessUnit.Integrated
-  }
-  implicit object brightnessABMagnitude   extends BrightnessUnit[ABMagnitude]   {
-    type Type = BrightnessUnit.Integrated
+
+    def apply[Units, _Type](implicit ev: UnitOfMeasure[Units]): BrightnessUnit[Units] =
+      new BrightnessUnit[Units] {
+        type Type = _Type
+        val name: String = ev.name
+        val abbv: String = ev.abbv
+      }
+
+    implicit val brightnessVegaMagnitude: BrightnessUnit[VegaMagnitude] =
+      BrightnessUnit[VegaMagnitude, BrightnessUnit.Integrated]
+
+    implicit val brightnessABMagnitude: BrightnessUnit[ABMagnitude] =
+      BrightnessUnit[ABMagnitude, BrightnessUnit.Integrated]
+
+    object Integrated {
+      val all: List[UnitDefinition] = List(brightnessVegaMagnitude, brightnessABMagnitude)
+    }
   }
 
   trait Pixels
