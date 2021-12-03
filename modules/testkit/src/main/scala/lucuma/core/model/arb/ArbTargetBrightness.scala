@@ -17,36 +17,39 @@ import lucuma.core.math.units._
 
 import scala.collection.immutable.SortedMap
 import coulomb.define.UnitDefinition
-import coulomb._
 
-trait ArbBrightness {
+trait ArbTargetBrightness {
 
   import ArbEnumerated._
 
-  implicit val arbBrightness: Arbitrary[Brightness] =
+  implicit val arbTargetBrightness: Arbitrary[TargetBrightness] =
     Arbitrary {
       for {
-        // s <- arbitrary[BrightnessUnit.Integrated]
         s <- Gen.oneOf(BrightnessUnit.Integrated.all)
         v <- arbitrary[BrightnessValue]
         b <- arbitrary[Band]
         e <- arbitrary[Option[BrightnessValue]]
-      } yield Brightness(v.withUnit[s.Type], b, e) //(s.definition)
+      } yield TargetBrightness(s.withValue(v), b, e)
     }
 
   implicit val cogUnitDefinition: Cogen[UnitDefinition] =
     Cogen[(String, String)].contramap(u => (u.name, u.abbv))
 
-  implicit val cogBrightness: Cogen[Brightness] =
+  implicit def cogQuantityTrait[N: Cogen]: Cogen[QuantityTrait[N]] =
+    Cogen[(N, UnitDefinition)].contramap(q => (q.value, q.unit.definition))
+
+  implicit val cogBrightness: Cogen[TargetBrightness] =
     Cogen[
-      (UnitDefinition, BrightnessValue, Band, Option[BrightnessValue])
-    ].contramap(u => (u.units, u.value, u.band, u.error))
+      (QuantityTrait[BrightnessValue], Band, Option[BrightnessValue])
+    ].contramap(u => (u.quantity, u.band, u.error))
 
-  implicit val arbBrightnessesMap: Arbitrary[SortedMap[Band, Brightness]] =
-    Arbitrary(arbitrary[Vector[Brightness]].map(_.fproductLeft(_.band)).map(x => SortedMap(x: _*)))
+  implicit val arbBrightnessesMap: Arbitrary[SortedMap[Band, TargetBrightness]] =
+    Arbitrary(
+      arbitrary[Vector[TargetBrightness]].map(_.fproductLeft(_.band)).map(x => SortedMap(x: _*))
+    )
 
-  implicit val cogBrightnessesMap: Cogen[SortedMap[Band, Brightness]] =
-    Cogen[Vector[(Band, Brightness)]].contramap(_.toVector)
+  implicit val cogBrightnessesMap: Cogen[SortedMap[Band, TargetBrightness]] =
+    Cogen[Vector[(Band, TargetBrightness)]].contramap(_.toVector)
 }
 
-object ArbBrightness extends ArbBrightness
+object ArbTargetBrightness extends ArbTargetBrightness

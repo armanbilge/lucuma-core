@@ -22,7 +22,7 @@ import lucuma.core.math.units._
  * This class replaces the previous `Magnitude`.
  */
 // final case class Brightness[Units](units: BrightnessUnit)(
-final case class Brightness(
+final case class TargetBrightness(
   quantity: DimensionQuantity[BrightnessValue, Brightness],
   band:     Band,
   error:    Option[BrightnessValue]
@@ -34,38 +34,17 @@ final case class Brightness(
   }
 }
 
-object Brightness {
-  // def apply[_Units](
-  //   _value:          Quantity[BrightnessValue, _Units],
-  //   _band:           Band,
-  //   _error:          Option[BrightnessValue]
-  // )(implicit _units: BrightnessUnit[_Units]): Brightness =
-  //   new Brightness {
-  //     type Units = _Units
-  //     val units                                   = _units.definition
-  //     val value: Quantity[BrightnessValue, Units] = _value
-  //     val band: Band                              = _band
-  //     val error: Option[BrightnessValue]          = _error
-  //   }
+object TargetBrightness {
+  val quantity: Lens[TargetBrightness, DimensionQuantity[BrightnessValue, Brightness]] =
+    Focus[TargetBrightness](_.quantity)
 
-  // def value[Units, Type](implicit
-  //   @unused ev: BrightnessUnit[Units]
-  // ): Lens[Brightness[Units], Quantity[BrightnessValue, Units]] =
-  //   Focus[Brightness[Units]](_.value)
+  val value: Lens[TargetBrightness, BrightnessValue] = quantity.andThen(DimensionQuantity.value)
 
-  val quantity: Lens[Brightness, DimensionQuantity[BrightnessValue, Brightness]] =
-    Focus[Brightness](_.quantity)
+  val unit: Lens[TargetBrightness, UnitType] = quantity.andThen(DimensionQuantity.unit)
 
-  val value: Lens[Brightness, BrightnessValue] = quantity.andThen(DimensionQuantity.value)
+  val band: Lens[TargetBrightness, Band] = Focus[TargetBrightness](_.band)
 
-  val unit: Lens[Brightness, UnitType] = quantity.andThen(DimensionQuantity.unit)
-
-  val band: Lens[Brightness, Band] = Focus[Brightness](_.band)
-
-  // val error: Lens[Brightness, Option[BrightnessValue]] = Focus[Brightness](_.error)
-
-  // val units: Lens[Brightness, BrightnessUnit[BrightnessUnit.Integrated]] =
-  //   Focus[Brightness](_.units)
+  val error: Lens[TargetBrightness, Option[BrightnessValue]] = Focus[TargetBrightness](_.error)
 
   /** Secondary constructor. */
   // def apply(value: BrightnessValue, band: Band, error: BrightnessValue) =
@@ -85,12 +64,12 @@ object Brightness {
   // implicit val BrightnessOrdering: Order[Brightness] =
   //   Order.by(m => (m.units.tag, m.band.tag, m.value, m.error))
 
-  implicit def BrightnessOrder: Order[Brightness] =
+  implicit def TargetBrightnessOrder: Order[TargetBrightness] =
     // Not same order as before, this doesn't take into account unit definition order
     Order.by(m => (m.quantity.unit.definition.name, m.band.tag, m.quantity.value, m.error))
 
   /** group Typeclass Instances */
-  implicit def BrightnessShow[Units]: Show[Brightness] =
+  implicit def TargetBrightnessShow[Units]: Show[TargetBrightness] =
     Show.fromToString
 
 }

@@ -65,9 +65,19 @@ trait units {
     def definition: UnitDefinition
   }
 
+  trait DimensionUnitType[D] extends UnitType {
+    type Dimension = D
+
+    def withValue[N](value: N): DimensionQuantity[N, D] =
+      DimensionQuantity(value, this)
+  }
+
   trait UnitOfMeasure[U] extends UnitType {
     type Type = U
   }
+
+  trait DimensionUnitOfMeasure[D, U] extends UnitOfMeasure[U] with DimensionUnitType[D]
+
   object UnitOfMeasure {
     def apply[U: UnitOfMeasure]: UnitOfMeasure[U] = implicitly[UnitOfMeasure[U]]
 
@@ -83,6 +93,16 @@ trait units {
       }
   }
 
+  object DimensionUnitOfMeasure {
+    def apply[D, U](implicit
+      unit:       UnitOfMeasure[U],
+      @unused ev: DimensionUnit[D, U]
+    ): DimensionUnitOfMeasure[D, U] =
+      new DimensionUnitOfMeasure[D, U] {
+        val definition = unit.definition
+      }
+  }
+
   trait VegaMagnitude
   implicit val defineVegaMagnitude =
     DerivedUnit[VegaMagnitude, Unitless](Rational.one, abbv = "Vega mags")
@@ -95,7 +115,7 @@ trait units {
 
   //
 
-  trait BrightnessUnit[U] extends UnitOfMeasure[U] {
+  trait BrightnessUnit[U] extends DimensionUnitOfMeasure[Brightness, U] {
     type Kind
   }
 
@@ -103,22 +123,25 @@ trait units {
     type Integrated
     type Surface
 
-    def apply[Units, _Kind](implicit ev: UnitOfMeasure[Units]): BrightnessUnit[Units] =
-      new BrightnessUnit[Units] {
-        type Kind = _Kind
-        val definition = ev.definition
+    implicit val brightnessVegaMagnitude: BrightnessUnit[VegaMagnitude] =
+      new BrightnessUnit[VegaMagnitude] {
+        type Kind = BrightnessUnit.Integrated
+        val definition = defineVegaMagnitude
       }
 
-    implicit val brightnessVegaMagnitude: BrightnessUnit[VegaMagnitude] =
-      BrightnessUnit[VegaMagnitude, BrightnessUnit.Integrated]
-
     implicit val brightnessABMagnitude: BrightnessUnit[ABMagnitude] =
-      BrightnessUnit[ABMagnitude, BrightnessUnit.Integrated]
+      new BrightnessUnit[ABMagnitude] {
+        type Kind = BrightnessUnit.Integrated
+        val definition = defineABMagnitude
+      }
 
     object Integrated {
-      val all: List[UnitType] = List(brightnessVegaMagnitude, brightnessABMagnitude)
+      val all: List[DimensionUnitType[Brightness]] =
+        List(brightnessVegaMagnitude, brightnessABMagnitude)
     }
   }
+
+  //
 
   trait Pixels
   implicit val defineUnitPixels = BaseUnit[Pixels](abbv = "px")
