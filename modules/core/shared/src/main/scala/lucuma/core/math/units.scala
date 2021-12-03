@@ -16,92 +16,11 @@ import eu.timepit.refined._
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric._
 import eu.timepit.refined.types.numeric.PosInt
+import lucuma.core.math.dimensional._
 import spire.math._
-import monocle.Focus
-import monocle.Lens
-import scala.annotation.unused
 
 trait units {
-
-  // Like coulomb's quantity, but units are a value, not a type.
-  trait QuantityTrait[N] {
-    val value: N
-    val unit: UnitType
-
-    def toCoulomb: Quantity[N, unit.Type] = value.withUnit[unit.Type]
-  }
-
-  case class MyQuantity[N](value: N, unit: UnitType) extends QuantityTrait[N]
-  object MyQuantity {
-    def apply[N, U](q: Quantity[N, U])(implicit unit: UnitOfMeasure[U]): MyQuantity[N] =
-      MyQuantity(q.value, unit)
-
-    def value[N]: Lens[MyQuantity[N], N] = Focus[MyQuantity[N]](_.value)
-
-    def unit[N]: Lens[MyQuantity[N], UnitType] = Focus[MyQuantity[N]](_.unit)
-
-    // Implicit conversions to/from coulomb?
-  }
-
-  trait DimensionUnit[D, U]
-
   type Brightness
-
-  case class DimensionQuantity[N, D] private (value: N, unit: UnitType) extends QuantityTrait[N]
-  object DimensionQuantity {
-    def apply[N, D, U](
-      q:             Quantity[N, U]
-    )(implicit unit: UnitOfMeasure[U], @unused ev: DimensionUnit[D, U]): DimensionQuantity[N, D] =
-      DimensionQuantity(q.value, unit)
-
-    def value[N, D]: Lens[DimensionQuantity[N, D], N] = Focus[DimensionQuantity[N, D]](_.value)
-
-    def unit[N, D]: Lens[DimensionQuantity[N, D], UnitType] = Focus[DimensionQuantity[N, D]](_.unit)
-  }
-
-  // Trick to use coulomb's type units as values (by accessing their UnitDefinition instances)
-  trait UnitType {
-    type Type
-    def definition: UnitDefinition
-  }
-
-  trait DimensionUnitType[D] extends UnitType {
-    type Dimension = D
-
-    def withValue[N](value: N): DimensionQuantity[N, D] =
-      DimensionQuantity(value, this)
-  }
-
-  trait UnitOfMeasure[U] extends UnitType {
-    type Type = U
-  }
-
-  trait DimensionUnitOfMeasure[D, U] extends UnitOfMeasure[U] with DimensionUnitType[D]
-
-  object UnitOfMeasure {
-    def apply[U: UnitOfMeasure]: UnitOfMeasure[U] = implicitly[UnitOfMeasure[U]]
-
-    implicit def unitOfMeasureFromBaseUnit[U](implicit ev: BaseUnit[U]): UnitOfMeasure[U] =
-      new UnitOfMeasure[U] {
-        val definition = ev
-      }
-    implicit def unitOfMeasureFromDerivedUnit[U, D](implicit
-      ev: DerivedUnit[U, D]
-    ): UnitOfMeasure[U] =
-      new UnitOfMeasure[U] {
-        val definition = ev
-      }
-  }
-
-  object DimensionUnitOfMeasure {
-    def apply[D, U](implicit
-      unit:       UnitOfMeasure[U],
-      @unused ev: DimensionUnit[D, U]
-    ): DimensionUnitOfMeasure[D, U] =
-      new DimensionUnitOfMeasure[D, U] {
-        val definition = unit.definition
-      }
-  }
 
   trait VegaMagnitude
   implicit val defineVegaMagnitude =

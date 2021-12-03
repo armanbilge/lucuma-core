@@ -10,6 +10,7 @@ import lucuma.core.math.BrightnessValue
 import monocle.Focus
 import monocle.Lens
 // import coulomb._
+import lucuma.core.math.dimensional._
 import lucuma.core.math.units._
 // import coulomb.unitops.UnitString
 // import scala.annotation.unused

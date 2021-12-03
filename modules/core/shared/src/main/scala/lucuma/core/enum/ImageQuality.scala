@@ -8,14 +8,16 @@ import coulomb.accepted.ArcSecond
 import eu.timepit.refined._
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.types.numeric.PosInt
-import lucuma.core.math.units.DeciArcSecond
+import lucuma.core.math.units._
 import lucuma.core.util.Display
 import lucuma.core.util.Enumerated
 import spire.math.Rational
 
-sealed abstract class ImageQuality(val toDeciArcSeconds: Quantity[PosInt, DeciArcSecond]) extends Product with Serializable {
+sealed abstract class ImageQuality(val toDeciArcSeconds: Quantity[PosInt, DeciArcSecond])
+    extends Product
+    with Serializable {
   def toArcSeconds: Quantity[Rational, ArcSecond] = toDeciArcSeconds.to[Rational, ArcSecond]
-  def label: String        = f"""< ${toArcSeconds.value.toDouble}%.1f\""""
+  def label: String                               = f"""< ${toArcSeconds.value.toDouble}%.1f\""""
 }
 
 object ImageQuality {
@@ -30,15 +32,16 @@ object ImageQuality {
   case object TwoPointZero extends ImageQuality(refineMV[Positive](20).withUnit[DeciArcSecond])
 
   implicit val ImageQualityEnumerated: Enumerated[ImageQuality] =
-    Enumerated.of(PointOne,
-                  PointTwo,
-                  PointThree,
-                  PointFour,
-                  PointSix,
-                  PointEight,
-                  OnePointZero,
-                  OnePointFive,
-                  TwoPointZero
+    Enumerated.of(
+      PointOne,
+      PointTwo,
+      PointThree,
+      PointFour,
+      PointSix,
+      PointEight,
+      OnePointZero,
+      OnePointFive,
+      TwoPointZero
     )
 
   implicit val ImageQualityDisplay: Display[ImageQuality] =

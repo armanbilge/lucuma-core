@@ -13,6 +13,7 @@ import lucuma.core.util.arb.ArbEnumerated
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._
 import org.scalacheck._
+import lucuma.core.math.dimensional._
 import lucuma.core.math.units._
 
 import scala.collection.immutable.SortedMap
@@ -35,12 +36,12 @@ trait ArbTargetBrightness {
   implicit val cogUnitDefinition: Cogen[UnitDefinition] =
     Cogen[(String, String)].contramap(u => (u.name, u.abbv))
 
-  implicit def cogQuantityTrait[N: Cogen]: Cogen[QuantityTrait[N]] =
+  implicit def cogQuantityTrait[N: Cogen]: Cogen[Qty[N]] =
     Cogen[(N, UnitDefinition)].contramap(q => (q.value, q.unit.definition))
 
   implicit val cogBrightness: Cogen[TargetBrightness] =
     Cogen[
-      (QuantityTrait[BrightnessValue], Band, Option[BrightnessValue])
+      (Qty[BrightnessValue], Band, Option[BrightnessValue])
     ].contramap(u => (u.quantity, u.band, u.error))
 
   implicit val arbBrightnessesMap: Arbitrary[SortedMap[Band, TargetBrightness]] =
