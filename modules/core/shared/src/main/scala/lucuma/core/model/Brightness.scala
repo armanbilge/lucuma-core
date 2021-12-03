@@ -44,7 +44,7 @@ object Brightness {
   )(implicit _units: BrightnessUnit[_Units]): Brightness =
     new Brightness {
       type Units = _Units
-      val units                                   = _units
+      val units                                   = _units.definition
       val value: Quantity[BrightnessValue, Units] = _value
       val band: Band                              = _band
       val error: Option[BrightnessValue]          = _error

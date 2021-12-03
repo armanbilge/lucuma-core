@@ -20,17 +20,33 @@ import spire.math._
 
 trait units {
 
+  // Like coulomb's quantity, but units are a value, not a type.
+  case class MyQuantity[N](value: N, unit: UnitType) {
+    def toCoulomb: Quantity[N, unit.Type] = value.withUnit[unit.Type]
+  }
+
   // Trick to use coulomb's type units as values (by accessing their UnitDefinition instances)
-  trait UnitOfMeasure[U] extends UnitDefinition
+  trait UnitType {
+    type Type
+    def definition: UnitDefinition
+  }
+
+  trait UnitOfMeasure[U] extends UnitType {
+    type Type = U
+  }
   object UnitOfMeasure {
     def apply[U: UnitOfMeasure]: UnitOfMeasure[U] = implicitly[UnitOfMeasure[U]]
 
     implicit def unitOfMeasureFromBaseUnit[U](implicit ev: BaseUnit[U]): UnitOfMeasure[U] =
-      ev.asInstanceOf[UnitOfMeasure[U]]
+      new UnitOfMeasure[U] {
+        val definition = ev
+      }
     implicit def unitOfMeasureFromDerivedUnit[U, D](implicit
       ev: DerivedUnit[U, D]
     ): UnitOfMeasure[U] =
-      ev.asInstanceOf[UnitOfMeasure[U]]
+      new UnitOfMeasure[U] {
+        val definition = ev
+      }
   }
 
   trait VegaMagnitude
@@ -43,23 +59,18 @@ trait units {
 
   //
 
-  // abstract class BrightnessUnit[Units, Type](val units: UnitOfMeasure[Units]) {
-  //   type UnitType = Units
-  // }
-
   trait BrightnessUnit[U] extends UnitOfMeasure[U] {
-    type Type
+    type Kind
   }
 
   object BrightnessUnit {
     type Integrated
     type Surface
 
-    def apply[Units, _Type](implicit ev: UnitOfMeasure[Units]): BrightnessUnit[Units] =
+    def apply[Units, _Kind](implicit ev: UnitOfMeasure[Units]): BrightnessUnit[Units] =
       new BrightnessUnit[Units] {
-        type Type = _Type
-        val name: String = ev.name
-        val abbv: String = ev.abbv
+        type Kind = _Kind
+        val definition = ev.definition
       }
 
     implicit val brightnessVegaMagnitude: BrightnessUnit[VegaMagnitude] =
@@ -69,7 +80,7 @@ trait units {
       BrightnessUnit[ABMagnitude, BrightnessUnit.Integrated]
 
     object Integrated {
-      val all: List[UnitDefinition] = List(brightnessVegaMagnitude, brightnessABMagnitude)
+      val all: List[UnitType] = List(brightnessVegaMagnitude, brightnessABMagnitude)
     }
   }
 

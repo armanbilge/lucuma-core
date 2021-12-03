@@ -31,7 +31,7 @@ trait ArbBrightness {
         v <- arbitrary[BrightnessValue]
         b <- arbitrary[Band]
         e <- arbitrary[Option[BrightnessValue]]
-      } yield Brightness(v.withUnit[s.UnitType], b, e)(s.units)
+      } yield Brightness(v.withUnit[s.Type], b, e) //(s.definition)
     }
 
   implicit val cogUnitDefinition: Cogen[UnitDefinition] =
