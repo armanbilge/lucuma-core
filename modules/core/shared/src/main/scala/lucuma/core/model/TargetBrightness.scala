@@ -4,25 +4,18 @@
 package lucuma.core.model
 
 import cats._
-// import cats.syntax.all._
 import lucuma.core.enum.Band
 import lucuma.core.math.BrightnessValue
 import monocle.Focus
 import monocle.Lens
-// import coulomb._
 import lucuma.core.math.dimensional._
 import lucuma.core.math.units._
-// import coulomb.unitops.UnitString
-// import scala.annotation.unused
-// import coulomb.cats.implicits._
-// import coulomb.define.UnitDefinition
 
 /**
  * Describes the brightness of a target on a given band.
  *
  * This class replaces the previous `Magnitude`.
  */
-// final case class Brightness[Units](units: BrightnessUnit)(
 final case class TargetBrightness(
   quantity: DimensionQuantity[BrightnessValue, Brightness],
   band:     Band,

@@ -38,12 +38,21 @@ trait units {
     DerivedUnit[ABMagnitude, Unitless](Rational.one, abbv = "AB mags")
   implicit object ABMagnitudeBrightness extends DimensionUnit[Brightness.Integrated, ABMagnitude]
 
-   object IntegratedBrightness {
-      val all: List[DimensionUnitType[Brightness.Integrated]] =
-        List(
-          UnitOfMeasure[VegaMagnitude].withDimension,
-          UnitOfMeasure[ABMagnitude].withDimension
-        )
+  object IntegratedBrightness {
+    val all: List[DimensionUnitType[Brightness.Integrated]] =
+      List(
+        UnitOfMeasure[VegaMagnitude].withDimension,
+        UnitOfMeasure[ABMagnitude].withDimension
+      )
+  }
+
+  import lucuma.core.util.Enumerated
+  implicit val enumDimUnitTypeIntegrated: Enumerated[DimensionUnitType[Brightness.Integrated]] =
+    new Enumerated[DimensionUnitType[Brightness.Integrated]] {
+      val all                                                        = IntegratedBrightness.all
+      def tag(a: DimensionUnitType[Brightness.Integrated])           = a.definition.abbv
+      override def unsafeFromTag(s: String): DimensionUnitType[Brightness.Integrated] = 
+        all.find(_.definition.abbv == s).get
     }
 
   //
