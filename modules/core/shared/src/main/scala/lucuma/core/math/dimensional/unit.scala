@@ -4,7 +4,6 @@
 package lucuma.core.math.dimensional
 
 import coulomb.define._
-import scala.annotation.unused
 
 // All of this is a bridge between coulomb an runtime quantities (as defined in `Qty`).
 
@@ -16,9 +15,14 @@ import scala.annotation.unused
  * In `coulomb` units are types. However in some cases we want to have runtime representations of
  * units.
  */
-trait UnitType {
+trait UnitType { self =>
   type Type
   def definition: UnitDefinition
+
+  def withValue[N](_value: N): Qty[N] = new Qty[N] {
+    val value = _value
+    val unit  = self
+  }
 }
 
 /**
@@ -30,8 +34,10 @@ trait UnitType {
 trait UnitOfMeasure[U] extends UnitType {
   type Type = U
 
-  def withDimension[D](implicit ev: DimensionUnit[D, U]): DimensionUnitOfMeasure[D, U] =
-    DimensionUnitOfMeasure(this, ev)
+  /**
+   * Build an association between this unit and group `G`.
+   */
+  def groupedIn[G]: GroupedUnitOfMeasure[G, U] = GroupedUnitOfMeasure(this)
 }
 
 object UnitOfMeasure {
@@ -41,6 +47,7 @@ object UnitOfMeasure {
     new UnitOfMeasure[U] {
       val definition = ev
     }
+
   implicit def unitOfMeasureFromDerivedUnit[U, D](implicit
     ev: DerivedUnit[U, D]
   ): UnitOfMeasure[U] =
@@ -49,49 +56,33 @@ object UnitOfMeasure {
     }
 }
 
-// trait DimensionUnitType[U] {
-//   type Dimension
-// }
+/**
+ * Type-level association of unit `U` to group `G`. This doesn't seem to be necessary for the
+ * moment. Maybe in other scenarios?
+ */
+// trait GroupedUnit[+G, U]
 
 /**
- * Evidence that `U` is a unit of measure for dimension `D`.
+ * Runtime association of a `UnitType` to group `G`.
  */
-trait DimensionUnit[+D, U] { //extends DimensionUnitType[U] {
-  // type Dimension = D
+trait GroupedUnitType[+G] extends UnitType {
+  override def withValue[N](value: N): GroupedUnitQuantity[N, G] =
+    GroupedUnitQuantity(value, this)
 }
 
 /**
- * A unit of measure and the physical dimension of that unit. A dimension being for example
- * `Length`, `Weight`, `Time`, etc.
- */
-trait DimensionUnitType[+D] extends UnitType {
-  // type Dimension = D
-
-  def withValue[N](value: N): DimensionQuantity[N, D] =
-    DimensionQuantity(value, this)
-}
-
-/**
- * Type-parametrized runtime representation of physical unit `U` with dimension `D`.
+ * Type-parametrized runtime representation of physical unit `U` and its association to unit group
+ * `G`.
  *
- * Automatically derived if there's an implicit `BaseUnit[U]` or `DerivedUnit[U, _]` in scope, as
- * well as a `DimensionUnit[D, U]`.
+ * // NOTE Could be automatically derived from an implicit `GroupedUnit[G, U]`, but we would still
+ * // have to specify `G`. Doesn't seem to provide much of an advantage over //
+ * `UnitOfMeasure.groupedIn[G]`.
  */
-trait DimensionUnitOfMeasure[+D, U] extends UnitOfMeasure[U] with DimensionUnitType[D]
+trait GroupedUnitOfMeasure[+G, U] extends UnitOfMeasure[U] with GroupedUnitType[G]
 
-object DimensionUnitOfMeasure {
-  def apply[D, U](implicit
-    unit:       UnitOfMeasure[U],
-    @unused ev: DimensionUnit[D, U]
-  ): DimensionUnitOfMeasure[D, U] =
-    new DimensionUnitOfMeasure[D, U] {
+object GroupedUnitOfMeasure {
+  def apply[G, U](implicit unit: UnitOfMeasure[U]): GroupedUnitOfMeasure[G, U] =
+    new GroupedUnitOfMeasure[G, U] {
       val definition = unit.definition
     }
-
-  // def of[U]()(implicit unit: UnitOfMeasure[U]): Applied[U] = new Applied[U](unit)
-
-  // class Applied[U](unit: UnitOfMeasure[U]) {
-  //   def apply[D]()(implicit ev: DimensionUnit[D, U]): DimensionUnitOfMeasure[D, U] =
-  //     DimensionUnitOfMeasure(unit, ev)
-  // }
 }

@@ -17,7 +17,7 @@ import lucuma.core.math.units._
  * This class replaces the previous `Magnitude`.
  */
 final case class TargetBrightness(
-  quantity: DimensionQuantity[BrightnessValue, Brightness],
+  quantity: GroupedUnitQuantity[BrightnessValue, Brightness],
   band:     Band,
   error:    Option[BrightnessValue]
 ) {
@@ -29,12 +29,12 @@ final case class TargetBrightness(
 }
 
 object TargetBrightness {
-  val quantity: Lens[TargetBrightness, DimensionQuantity[BrightnessValue, Brightness]] =
+  val quantity: Lens[TargetBrightness, GroupedUnitQuantity[BrightnessValue, Brightness]] =
     Focus[TargetBrightness](_.quantity)
 
-  val value: Lens[TargetBrightness, BrightnessValue] = quantity.andThen(DimensionQuantity.value)
+  val value: Lens[TargetBrightness, BrightnessValue] = quantity.andThen(GroupedUnitQuantity.value)
 
-  val unit: Lens[TargetBrightness, UnitType] = quantity.andThen(DimensionQuantity.unit)
+  val unit: Lens[TargetBrightness, UnitType] = quantity.andThen(GroupedUnitQuantity.unit)
 
   val band: Lens[TargetBrightness, Band] = Focus[TargetBrightness](_.band)
 

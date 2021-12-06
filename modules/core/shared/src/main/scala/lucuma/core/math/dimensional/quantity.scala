@@ -6,7 +6,6 @@ package lucuma.core.math.dimensional
 import coulomb._
 import monocle.Focus
 import monocle.Lens
-import scala.annotation.unused
 
 /**
  * A magnitude of type `N` and a runtime representation of a physical unit.
@@ -21,31 +20,24 @@ trait Qty[N] {
   def toCoulomb: Quantity[N, unit.Type] = value.withUnit[unit.Type]
 }
 
-// case class DimensionlessQuantity[N](value: N, unit: UnitType) extends Qty[N]
-// object DimensionlessQuantity {
-//   def apply[N, U](q: Quantity[N, U])(implicit unit: UnitOfMeasure[U]): DimensionlessQuantity[N] =
-//     DimensionlessQuantity(q.value, unit)
-
-//   def value[N]: Lens[DimensionlessQuantity[N], N] = Focus[DimensionlessQuantity[N]](_.value)
-
-//   def unit[N]: Lens[DimensionlessQuantity[N], UnitType] = Focus[DimensionlessQuantity[N]](_.unit)
-// }
-
 /**
- * A magnitude of type `N` and a runtime representation of a physical unit for a dimension `D`.
+ * A magnitude of type `N` and a runtime representation of a physical unit in group `G`.
  */
-case class DimensionQuantity[N, +D] private (value: N, unit: UnitType) extends Qty[N]
-object DimensionQuantity {
+case class GroupedUnitQuantity[N, +G] private (value: N, unit: UnitType) extends Qty[N]
+object GroupedUnitQuantity {
 
   /**
-   * Create a `DimensionQuantity` from a `coulomb.Quantity`.
+   * Create a `GroupedUnitQuantity` from a `coulomb.Quantity`.
+   *
+   * We could limit this to unit/groups with an GroupedUnit[G, U], requiring implicit evidence.
    */
-  def apply[N, D, U](
+  def apply[N, G, U](
     q:             Quantity[N, U]
-  )(implicit unit: UnitOfMeasure[U], @unused ev: DimensionUnit[D, U]): DimensionQuantity[N, D] =
-    DimensionQuantity(q.value, unit)
+  )(implicit unit: UnitOfMeasure[U]): GroupedUnitQuantity[N, G] =
+    GroupedUnitQuantity(q.value, unit)
 
-  def value[N, D]: Lens[DimensionQuantity[N, D], N] = Focus[DimensionQuantity[N, D]](_.value)
+  def value[N, G]: Lens[GroupedUnitQuantity[N, G], N] = Focus[GroupedUnitQuantity[N, G]](_.value)
 
-  def unit[N, D]: Lens[DimensionQuantity[N, D], UnitType] = Focus[DimensionQuantity[N, D]](_.unit)
+  def unit[N, G]: Lens[GroupedUnitQuantity[N, G], UnitType] =
+    Focus[GroupedUnitQuantity[N, G]](_.unit)
 }

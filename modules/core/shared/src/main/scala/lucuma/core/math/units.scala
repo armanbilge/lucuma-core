@@ -30,28 +30,28 @@ trait units {
   trait VegaMagnitude
   implicit val defineVegaMagnitude =
     DerivedUnit[VegaMagnitude, Unitless](Rational.one, abbv = "Vega mags")
-  implicit object VegaMagnitudeBrightness
-      extends DimensionUnit[Brightness.Integrated, VegaMagnitude]
+  // implicit object VegaMagnitudeBrightness
+  //     extends DimensionUnit[Brightness.Integrated, VegaMagnitude]
 
   trait ABMagnitude
   implicit val defineABMagnitude =
     DerivedUnit[ABMagnitude, Unitless](Rational.one, abbv = "AB mags")
-  implicit object ABMagnitudeBrightness extends DimensionUnit[Brightness.Integrated, ABMagnitude]
+  // implicit object ABMagnitudeBrightness extends DimensionUnit[Brightness.Integrated, ABMagnitude]
 
   object IntegratedBrightness {
-    val all: List[DimensionUnitType[Brightness.Integrated]] =
+    val all: List[GroupedUnitType[Brightness.Integrated]] =
       List(
-        UnitOfMeasure[VegaMagnitude].withDimension,
-        UnitOfMeasure[ABMagnitude].withDimension
+        UnitOfMeasure[VegaMagnitude].groupedIn[Brightness.Integrated],
+        UnitOfMeasure[ABMagnitude].groupedIn[Brightness.Integrated]
       )
   }
 
   import lucuma.core.util.Enumerated
-  implicit val enumDimUnitTypeIntegrated: Enumerated[DimensionUnitType[Brightness.Integrated]] =
-    new Enumerated[DimensionUnitType[Brightness.Integrated]] {
-      val all                                                        = IntegratedBrightness.all
-      def tag(a: DimensionUnitType[Brightness.Integrated])           = a.definition.abbv
-      override def unsafeFromTag(s: String): DimensionUnitType[Brightness.Integrated] = 
+  implicit val enumDimUnitTypeIntegrated: Enumerated[GroupedUnitType[Brightness.Integrated]] =
+    new Enumerated[GroupedUnitType[Brightness.Integrated]] {
+      val all                                                                       = IntegratedBrightness.all
+      def tag(a: GroupedUnitType[Brightness.Integrated])                            = a.definition.abbv
+      override def unsafeFromTag(s: String): GroupedUnitType[Brightness.Integrated] =
         all.find(_.definition.abbv == s).get
     }
 
