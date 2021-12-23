@@ -14,10 +14,11 @@ sealed abstract class PlanetaryNebulaSpectrum(
 
 object PlanetaryNebulaSpectrum {
   case object NGC7009 extends PlanetaryNebulaSpectrum("NGC7009", "NGC7009 (100nm - 1.1μm)")
+  case object NGC7027 extends PlanetaryNebulaSpectrum("NGC7027", "NGC7027")
   case object IC5117  extends PlanetaryNebulaSpectrum("IC5117", "IC5117 (480nm - 2.5μm)")
 
   implicit val enumPlanetaryNebulaSpectrum: Enumerated[PlanetaryNebulaSpectrum] =
-    Enumerated.from(NGC7009, IC5117).withTag(_.tag)
+    Enumerated.from(NGC7009, IC5117, NGC7027).withTag(_.tag)
 
   implicit val displayPlanetaryNebulaSpectrum: Display[PlanetaryNebulaSpectrum] =
     Display.byShortName(_.name)
