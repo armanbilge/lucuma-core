@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 env:
   JABBA_INDEX: 'https://github.com/typelevel/jdk-index/raw/main/index.json'
-  MUNIT_FLAKY_OK: 'true'
+  MUNIT_FLAKY_OK: true
 
 jobs:
   build:
@@ -23,4 +23,6 @@ jobs:
         with:
           java-version: ${{ matrix.jdk }}
       - name: Run compile
-        run: sbt -v -J-Xmx6g -J-Xss4m headerCheck +compile +test +doc
+        run: |
+          echo "MUNIT_FLAKY_OK: $MUNIT_FLAKY_OK"
+          sbt -v -J-Xmx6g -J-Xss4m headerCheck +compile +test +doc
